@@ -1,37 +1,99 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# IMF Partner Portal
 
-## Getting Started
+A full-stack Next.js application for an insurance brokerage (modelled on
+[citizenimf.com](https://citizenimf.com)). Partners register, get verified by an
+admin, submit insurance policies from India's leading insurers, and earn
+**reward coins** (non-monetary reward points) when policies are created.
 
-First, run the development server:
+## Features
 
+### Partner side
+- **Landing page** with a **Partner Registration Portal**.
+- **Registration** capturing mandatory KYC (Aadhaar, PAN, **selfie**, mobile,
+  email, name), **bank account details** (account number, IFSC, bank), address,
+  and **optional** 10th / 12th marksheets.
+- On submit, a **verification wait screen** — login only works once an admin
+  approves the account.
+- **Login** (blocked until verified).
+- **Dashboard** with a top nav bar (name, avatar, coin balance, logout):
+  - **Services** — Health, Life, Car, Two-wheeler, Travel, Personal Accident,
+    Home, Shop, Marine.
+  - Opening a category (e.g. **Life Insurance**) lists all **insurer partners**
+    (LIC, Max Life, Bajaj, Tata AIA, ICICI Pru, PNB MetLife, …).
+  - **Create policy** — a full proposal form (proposer, nominee, sum assured,
+    premium, term, premium-paying term, documents) sent to the admin.
+  - **My Requests** — track every submission with a **chat** thread per request.
+  - **Profile** — coin balance and a full **earnings / coin history** ledger.
+
+### Admin side (separate login at `/admin/login`)
+- **Dashboard** with statistics: partner counts, submissions by status, coins
+  issued, **top earners**, **most active partners**, policies by category.
+- **Partners** — verify / reject registrations, **reset a partner's password**,
+  view KYC documents, and **increase / decrease** a partner's coins (logged).
+- **Submissions** — review each request, **chat** with the partner, and
+  **create the policy**. Before a policy can be marked *created*, the admin
+  **must assign a coin reward** — which is credited to the partner instantly and
+  shown in their history. The partner then sees a *"Policy created
+  successfully"* banner.
+
+## Tech stack
+- **Next.js 16** (App Router, TypeScript, React 19)
+- **Tailwind CSS v4**
+- **MongoDB** via Mongoose
+- **Cloudflare R2** (S3-compatible) for image / document uploads
+- **jose** (JWT sessions in httpOnly cookies) + **bcryptjs**
+
+## Getting started
+
+### 1. Install dependencies
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Configure environment
+Copy `.env.example` to `.env.local` and fill in the values:
+```bash
+cp .env.example .env.local
+```
+- `MONGODB_URI` — a MongoDB connection string (local or Atlas).
+- `JWT_SECRET` — a long random string.
+- `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET` —
+  your Cloudflare R2 credentials (needed for uploads).
+- `R2_PUBLIC_URL` — optional; if the bucket is public, files load directly,
+  otherwise they are served through an authenticated presigned-URL proxy.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Create the first admin
+```bash
+npm run seed
+```
+This creates an admin from `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. Run
+```bash
+npm run dev
+```
+Open http://localhost:3000
 
-## Learn More
+- Partner registration: `/register`
+- Partner login: `/login`
+- Admin login: `/admin/login`
 
-To learn more about Next.js, take a look at the following resources:
+## Coins, not currency
+Rewards are tracked as **coins / reward points**, never as currency. Admins
+credit or debit coins; every change is recorded in a ledger the partner can see.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# IMF_App
+## Project structure
+```
+app/
+  page.tsx                     Landing page
+  register/                    Partner registration portal
+  login/  pending/             Partner login + verification wait screen
+  dashboard/                   Partner area (services, requests, profile)
+  admin/login/                 Admin login
+  admin/(console)/             Admin area (dashboard, partners, submissions)
+  api/                         Route handlers (auth, upload, policies, admin)
+components/                    Shared UI (nav, chat, uploader, cards…)
+lib/                           db, auth, r2, catalog, validation, helpers
+models/                        Mongoose models
+scripts/seed.ts               First-admin seeder
+```
