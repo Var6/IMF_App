@@ -39,3 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Marketing-site assets copied into public/ that the partner portal does not use
+# (kept locally, excluded from the app deploy). Remove these lines to include them.
+/public/docs/
+/public/testimonials/
+/public/sitemap.xml
+/public/sitemap-0.xml
+/public/robots.txt
+/public/ai-index.json
+/public/Support.png

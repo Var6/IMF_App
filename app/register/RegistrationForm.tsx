@@ -240,6 +240,18 @@ export function RegistrationForm() {
       </Section>
 
       <div className="flex flex-col items-center gap-3">
+        <p className="max-w-md text-center text-xs text-slate-500">
+          By submitting, you confirm your details are accurate and you agree to
+          our{" "}
+          <Link href="/terms" className="font-medium text-brand-600 underline">
+            Terms &amp; Conditions
+          </Link>{" "}
+          and{" "}
+          <Link href="/privacy" className="font-medium text-brand-600 underline">
+            Privacy Policy
+          </Link>
+          .
+        </p>
         <button type="submit" disabled={submitting} className="btn-primary w-full md:w-auto md:px-10">
           {submitting ? "Submitting…" : "Submit registration"}
         </button>

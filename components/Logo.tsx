@@ -8,20 +8,28 @@ export function Logo({
   light?: boolean;
 }) {
   return (
-    <Link href={href} className="inline-flex items-center gap-2">
-      <span
-        className={`grid h-9 w-9 place-items-center rounded-xl font-bold ${
-          light ? "bg-white text-brand-700" : "bg-brand-600 text-white"
-        }`}
-      >
-        IMF
-      </span>
-      <span
-        className={`text-lg font-bold tracking-tight ${
-          light ? "text-white" : "text-slate-900"
-        }`}
-      >
-        Partner Portal
+    <Link href={href} className="inline-flex items-center gap-2.5">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/logo.png"
+        alt="Citizen IMF"
+        className="h-10 w-10 shrink-0 rounded-full object-contain"
+      />
+      <span className="flex flex-col leading-tight">
+        <span
+          className={`text-base font-extrabold tracking-tight ${
+            light ? "text-white" : "text-slate-900"
+          }`}
+        >
+          Citizen IMF
+        </span>
+        <span
+          className={`text-[11px] font-medium ${
+            light ? "text-white/70" : "text-slate-500"
+          }`}
+        >
+          Partner Portal
+        </span>
       </span>
     </Link>
   );

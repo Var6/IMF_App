@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
-import { CATEGORIES } from "@/lib/catalog";
+import { CATEGORIES, FEATURED_PARTNER_LOGOS } from "@/lib/catalog";
 
 export default function LandingPage() {
   return (
@@ -87,6 +87,27 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Trusted partners */}
+      <section className="border-b border-slate-200 bg-white">
+        <div className="mx-auto max-w-6xl px-4 py-10">
+          <p className="text-center text-sm font-semibold uppercase tracking-wide text-slate-400">
+            Trusted insurer partners
+          </p>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-6">
+            {FEATURED_PARTNER_LOGOS.map((p) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={p.src}
+                src={p.src}
+                alt={p.name}
+                title={p.name}
+                className="h-12 w-auto max-w-[120px] rounded-lg object-contain opacity-80 grayscale transition hover:opacity-100 hover:grayscale-0"
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Services */}
       <section className="mx-auto max-w-6xl px-4 py-16">
         <h2 className="text-center text-3xl font-bold text-slate-900">
@@ -153,15 +174,31 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="mt-auto border-t border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 py-8 text-sm text-slate-500 md:flex-row">
-          <Logo />
-          <p>
-            © {new Date().getFullYear()} IMF Partner Portal. For authorized
-            partners only.
+        <div className="mx-auto max-w-6xl px-4 py-8">
+          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+            <Logo />
+            <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-slate-500">
+              <Link href="/register" className="hover:text-brand-600">
+                Become a Partner
+              </Link>
+              <Link href="/login" className="hover:text-brand-600">
+                Partner Login
+              </Link>
+              <Link href="/terms" className="hover:text-brand-600">
+                Terms
+              </Link>
+              <Link href="/privacy" className="hover:text-brand-600">
+                Privacy Policy
+              </Link>
+              <Link href="/admin/login" className="hover:text-brand-600">
+                Admin
+              </Link>
+            </nav>
+          </div>
+          <p className="mt-6 text-center text-xs text-slate-400">
+            © {new Date().getFullYear()} Citizen Savings &amp; Credit IMF Pvt. Ltd.
+            All rights reserved. For authorized partners only.
           </p>
-          <Link href="/admin/login" className="hover:text-brand-600">
-            Admin
-          </Link>
         </div>
       </footer>
     </div>

@@ -13,9 +13,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "IMF Partner Portal",
+  title: {
+    default: "Citizen IMF — Partner Portal",
+    template: "%s · Citizen IMF Partner Portal",
+  },
   description:
-    "Partner registration and policy portal — health, life and general insurance.",
+    "Citizen Savings & Credit IMF Pvt. Ltd. partner portal — register as a partner, submit health, life and general insurance policies, and earn rewards.",
+  icons: { icon: "/logo.png", apple: "/logo.png" },
 };
 
 export default function RootLayout({

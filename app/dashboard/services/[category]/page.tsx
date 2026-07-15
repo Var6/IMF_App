@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getCategory } from "@/lib/catalog";
+import { getCategory, insurerLogo } from "@/lib/catalog";
 
 export default async function CategoryPage({
   params,
@@ -31,16 +31,27 @@ export default async function CategoryPage({
         Choose an insurer partner
       </h2>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {cat.insurers.map((ins) => (
+        {cat.insurers.map((ins) => {
+          const logo = insurerLogo(ins.slug);
+          return (
           <div key={ins.slug} className="card flex flex-col p-5">
             <div className="flex items-center gap-3">
-              <div className="grid h-11 w-11 place-items-center rounded-xl bg-brand-100 text-lg font-bold text-brand-700">
-                {ins.name
-                  .split(" ")
-                  .slice(0, 2)
-                  .map((w) => w[0])
-                  .join("")}
-              </div>
+              {logo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={logo}
+                  alt={ins.name}
+                  className="h-11 w-11 shrink-0 rounded-xl border border-slate-200 bg-white object-contain p-1"
+                />
+              ) : (
+                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand-100 text-lg font-bold text-brand-700">
+                  {ins.name
+                    .split(" ")
+                    .slice(0, 2)
+                    .map((w) => w[0])
+                    .join("")}
+                </div>
+              )}
               <h3 className="font-semibold text-slate-900">{ins.name}</h3>
             </div>
             <Link
@@ -50,7 +61,8 @@ export default async function CategoryPage({
               Create policy →
             </Link>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

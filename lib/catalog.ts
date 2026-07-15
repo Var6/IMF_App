@@ -146,6 +146,39 @@ export const CATEGORIES: ServiceCategory[] = [
   },
 ];
 
+/** Insurer logo files (in /public/partners). Keyed by insurer slug. */
+export const PARTNER_LOGOS: Record<string, string> = {
+  "lic-of-india": "/partners/lic.jpg",
+  "max-life-insurance": "/partners/max-life.jpg",
+  "bajaj-allianz-life": "/partners/bajaj.jpg",
+  "bajaj-allianz-general": "/partners/bajaj.jpg",
+  "tata-aia-life": "/partners/tata.jpg",
+  "tata-aig": "/partners/tata.jpg",
+  "icici-prudential-life": "/partners/icic.jpg",
+  "icici-lombard": "/partners/icic.jpg",
+  "pnb-metlife": "/partners/pnb.png",
+  "care-health-insurance": "/partners/care.jpg",
+  "niva-bupa": "/partners/niva.jpg",
+  "national-insurance": "/partners/national.jpg",
+};
+
+export function insurerLogo(slug: string): string | null {
+  return PARTNER_LOGOS[slug] ?? null;
+}
+
+/** Distinct partner logos for "trusted by" strips. */
+export const FEATURED_PARTNER_LOGOS: { name: string; src: string }[] = [
+  { name: "LIC", src: "/partners/lic.jpg" },
+  { name: "Max Life", src: "/partners/max-life.jpg" },
+  { name: "Bajaj Allianz", src: "/partners/bajaj.jpg" },
+  { name: "Tata AIA / AIG", src: "/partners/tata.jpg" },
+  { name: "ICICI", src: "/partners/icic.jpg" },
+  { name: "PNB MetLife", src: "/partners/pnb.png" },
+  { name: "Care Health", src: "/partners/care.jpg" },
+  { name: "Niva Bupa", src: "/partners/niva.jpg" },
+  { name: "National", src: "/partners/national.jpg" },
+];
+
 export function getCategory(slug: string): ServiceCategory | undefined {
   return CATEGORIES.find((c) => c.slug === slug);
 }
