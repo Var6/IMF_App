@@ -1,6 +1,6 @@
 import type { PolicyDoc } from "@/models/Policy";
 import { publicUrlForKey } from "@/lib/r2";
-import { detailRows } from "@/lib/forms";
+import { detailRows, fileFieldDocs } from "@/lib/forms";
 import { categoryName } from "@/lib/catalog";
 
 /** A plain, client-safe view of a policy for lists/cards. */
@@ -56,6 +56,16 @@ export interface PolicyFull extends PolicySummary {
 }
 
 export function toPolicyFull(p: PolicyDoc): PolicyFull {
+  const details = (p.details ?? {}) as Record<string, unknown>;
+  const uploadedDocs = (p.documents ?? []).map((d) => ({
+    label: d.label,
+    url: publicUrlForKey(d.key),
+  }));
+  // File-type form fields (e.g. two-wheeler RC / previous policy) shown as docs.
+  const fieldDocs = fileFieldDocs(p.category, details).map((d) => ({
+    label: d.label,
+    url: publicUrlForKey(d.key),
+  }));
   return {
     ...toPolicySummary(p),
     insurerSlug: p.insurerSlug,
@@ -64,9 +74,6 @@ export function toPolicyFull(p: PolicyDoc): PolicyFull {
     partnerNotes: p.partnerNotes || undefined,
     adminNotes: p.adminNotes || undefined,
     rejectionReason: p.rejectionReason || undefined,
-    documents: (p.documents ?? []).map((d) => ({
-      label: d.label,
-      url: publicUrlForKey(d.key),
-    })),
+    documents: [...fieldDocs, ...uploadedDocs],
   };
 }

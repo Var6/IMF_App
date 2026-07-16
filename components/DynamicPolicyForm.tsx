@@ -166,6 +166,21 @@ function Field({
   onChange: (v: string) => void;
   error?: string;
 }) {
+  if (field.type === "file") {
+    return (
+      <div className={field.full ? "md:col-span-2" : ""}>
+        <FileUpload
+          label={field.label}
+          required={field.required}
+          folder="policies/docs"
+          accept="image/*,application/pdf"
+          hint={field.required ? "Required. Image or PDF, max 8MB." : "Optional. Image or PDF."}
+          onUploaded={(k) => onChange(k || "")}
+        />
+        {error && <p className="field-error">{error}</p>}
+      </div>
+    );
+  }
   return (
     <div className={field.full ? "md:col-span-2" : ""}>
       <label className="label">

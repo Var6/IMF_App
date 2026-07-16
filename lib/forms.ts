@@ -18,7 +18,8 @@ export type FieldType =
   | "number"
   | "date"
   | "select"
-  | "textarea";
+  | "textarea"
+  | "file";
 
 export interface FormField {
   name: string;
@@ -154,6 +155,14 @@ export const SERVICE_FORMS: Record<string, ServiceForm> = {
           { name: "policyType", label: "Policy Type", type: "select", options: opt([["comprehensive", "Comprehensive"], ["third-party", "Third-party"], ["own-damage", "Own Damage"]]) },
         ],
       },
+      {
+        title: "Vehicle documents",
+        icon: "📄",
+        fields: [
+          { name: "rcDocument", label: "RC — Registration Certificate", type: "file", required: true },
+          { name: "previousPolicy", label: "Previous Policy Copy", type: "file" },
+        ],
+      },
       contact("Full Name"),
     ],
   },
@@ -279,9 +288,22 @@ export function detailRows(
   const form = getServiceForm(category);
   if (!form || !details) return [];
   return allFields(form)
-    .filter((f) => !f.name.startsWith("customer"))
+    .filter((f) => !f.name.startsWith("customer") && f.type !== "file")
     .map((f) => ({ label: f.label, value: fieldDisplayValue(f, details[f.name]) }))
     .filter((r) => r.value && r.value !== "—");
+}
+
+/** File-type fields that were uploaded — returned as {label, key} documents. */
+export function fileFieldDocs(
+  category: string,
+  details: Record<string, unknown> | undefined
+): { label: string; key: string }[] {
+  const form = getServiceForm(category);
+  if (!form || !details) return [];
+  return allFields(form)
+    .filter((f) => f.type === "file")
+    .map((f) => ({ label: f.label, key: String(details[f.name] ?? "") }))
+    .filter((d) => d.key);
 }
 
 /** Validate a submission's details against its form. Returns error map by field name. */
