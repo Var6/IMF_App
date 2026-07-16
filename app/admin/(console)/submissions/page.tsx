@@ -3,7 +3,7 @@ import { connectDB } from "@/lib/db";
 import { Policy } from "@/models/Policy";
 import { Partner } from "@/models/Partner";
 import { StatusBadge } from "@/components/Logo";
-import { statusLabel, formatDate, formatNumber } from "@/lib/format";
+import { statusLabel, formatDate } from "@/lib/format";
 import { categoryName } from "@/lib/catalog";
 
 export const metadata = { title: "Submissions" };
@@ -69,7 +69,7 @@ export default async function SubmissionsPage({
                 <th className="px-4 py-3">Plan / Insurer</th>
                 <th className="px-4 py-3">Partner</th>
                 <th className="px-4 py-3">Category</th>
-                <th className="px-4 py-3">Sum assured</th>
+                <th className="px-4 py-3">Customer</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Date</th>
                 <th className="px-4 py-3"></th>
@@ -86,10 +86,10 @@ export default async function SubmissionsPage({
               {policies.map((pol) => {
                 const x = pol as never as {
                   _id: unknown;
-                  planName: string;
+                  planName?: string;
                   insurerName: string;
                   category: string;
-                  sumAssured: number;
+                  applicantName: string;
                   status: string;
                   createdAt: Date;
                   partner?: { name?: string; email?: string };
@@ -100,7 +100,9 @@ export default async function SubmissionsPage({
                     className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
                   >
                     <td className="px-4 py-3">
-                      <p className="font-medium text-slate-800">{x.planName}</p>
+                      <p className="font-medium text-slate-800">
+                        {x.planName || categoryName(x.category)}
+                      </p>
                       <p className="text-xs text-slate-400">{x.insurerName}</p>
                     </td>
                     <td className="px-4 py-3 text-slate-600">
@@ -109,9 +111,7 @@ export default async function SubmissionsPage({
                     <td className="px-4 py-3 text-slate-600">
                       {categoryName(x.category)}
                     </td>
-                    <td className="px-4 py-3 text-slate-600">
-                      ₹{formatNumber(x.sumAssured)}
-                    </td>
+                    <td className="px-4 py-3 text-slate-600">{x.applicantName}</td>
                     <td className="px-4 py-3">
                       <StatusBadge status={x.status} label={statusLabel(x.status)} />
                     </td>

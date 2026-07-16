@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getInsurer } from "@/lib/catalog";
-import { PolicyForm } from "./PolicyForm";
+import { DynamicPolicyForm } from "@/components/DynamicPolicyForm";
 
 export default async function NewPolicyPage({
   params,
@@ -30,7 +30,7 @@ export default async function NewPolicyPage({
         </p>
       </div>
 
-      <PolicyForm
+      <DynamicPolicyForm
         category={match.category.slug}
         insurerSlug={match.insurer.slug}
         insurerName={match.insurer.name}

@@ -4,6 +4,7 @@ import { Policy } from "@/models/Policy";
 import { requireRole } from "@/lib/auth";
 import { policySchema } from "@/lib/validation";
 import { getInsurer } from "@/lib/catalog";
+import { validateDetails } from "@/lib/forms";
 
 export const runtime = "nodejs";
 
@@ -31,6 +32,20 @@ export async function POST(req: Request) {
     );
   }
 
+  // Validate the service-specific answers against the category's form.
+  const details = (d.details ?? {}) as Record<string, unknown>;
+  const fieldErrors = validateDetails(d.category, details);
+  if (Object.keys(fieldErrors).length > 0) {
+    return NextResponse.json(
+      { error: "Please complete all required fields.", fieldErrors },
+      { status: 400 }
+    );
+  }
+
+  const applicantName = String(details.customerName ?? "").trim();
+  const applicantMobile = String(details.customerMobile ?? "").trim();
+  const applicantEmail = String(details.customerEmail ?? "").trim().toLowerCase();
+
   await connectDB();
 
   const policy = await Policy.create({
@@ -38,37 +53,11 @@ export async function POST(req: Request) {
     category: d.category,
     insurerSlug: d.insurerSlug,
     insurerName: match.insurer.name,
-    planName: d.planName,
-    planType: d.planType,
-
-    proposerName: d.proposerName,
-    proposerDob: d.proposerDob,
-    proposerGender: d.proposerGender,
-    proposerMobile: d.proposerMobile,
-    proposerEmail: d.proposerEmail || undefined,
-    proposerPan: d.proposerPan || undefined,
-    proposerAadhaar: d.proposerAadhaar || undefined,
-    proposerAddress: d.proposerAddress || undefined,
-    occupation: d.occupation || undefined,
-    annualIncome: d.annualIncome,
-    tobaccoUser: Boolean(d.tobaccoUser),
-    medicalHistory: d.medicalHistory || undefined,
-
-    nominee: {
-      name: d.nomineeName,
-      relation: d.nomineeRelation,
-      dob: d.nomineeDob || undefined,
-      sharePercent: d.nomineeSharePercent,
-      appointeeName: d.appointeeName || undefined,
-    },
-
-    sumAssured: d.sumAssured,
-    premiumAmount: d.premiumAmount,
-    premiumFrequency: d.premiumFrequency,
-    policyTermYears: d.policyTermYears,
-    premiumPayingTermYears: d.premiumPayingTermYears,
-    proposedStartDate: d.proposedStartDate || undefined,
-
+    planName: d.planName || undefined,
+    applicantName,
+    applicantMobile,
+    applicantEmail: applicantEmail || undefined,
+    details,
     documents: d.documents ?? [],
     partnerNotes: d.partnerNotes || undefined,
     status: "submitted",

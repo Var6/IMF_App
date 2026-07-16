@@ -1,7 +1,6 @@
 import { StatusBadge } from "@/components/Logo";
-import { statusLabel, formatNumber, formatDate } from "@/lib/format";
+import { statusLabel } from "@/lib/format";
 import type { PolicyFull } from "@/lib/serialize";
-import { categoryName } from "@/lib/catalog";
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -30,11 +29,13 @@ export function PolicyDetails({ policy }: { policy: PolicyFull }) {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold text-slate-900">{policy.planName}</h2>
+              <h2 className="text-xl font-bold text-slate-900">
+                {policy.planName || policy.categoryName}
+              </h2>
               <StatusBadge status={policy.status} label={statusLabel(policy.status)} />
             </div>
             <p className="text-sm text-slate-500">
-              {categoryName(policy.category)} · {policy.insurerName} · {policy.planType}
+              {policy.categoryName} · {policy.insurerName}
             </p>
           </div>
           {policy.status === "created" && (
@@ -53,42 +54,21 @@ export function PolicyDetails({ policy }: { policy: PolicyFull }) {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Block title="Proposer / insured">
-          <Row label="Name" value={policy.proposerName} />
-          <Row label="Date of birth" value={policy.proposerDob} />
-          <Row label="Gender" value={policy.proposerGender} />
-          <Row label="Mobile" value={policy.proposerMobile} />
-          <Row label="Email" value={policy.proposerEmail} />
-          <Row label="PAN" value={policy.proposerPan} />
-          <Row label="Aadhaar" value={policy.proposerAadhaar} />
-          <Row label="Occupation" value={policy.occupation} />
-          <Row
-            label="Annual income"
-            value={policy.annualIncome ? `₹${formatNumber(policy.annualIncome)}` : "—"}
-          />
-          <Row label="Tobacco / smoker" value={policy.tobaccoUser ? "Yes" : "No"} />
-          <Row label="Address" value={policy.proposerAddress} />
-          <Row label="Medical history" value={policy.medicalHistory} />
+        <Block title="Customer">
+          <Row label="Name" value={policy.applicantName} />
+          <Row label="Mobile" value={policy.applicantMobile} />
+          <Row label="Email" value={policy.applicantEmail} />
         </Block>
 
-        <div className="space-y-4">
-          <Block title="Nominee">
-            <Row label="Name" value={policy.nominee.name} />
-            <Row label="Relationship" value={policy.nominee.relation} />
-            <Row label="Date of birth" value={policy.nominee.dob} />
-            <Row label="Share" value={`${policy.nominee.sharePercent}%`} />
-            <Row label="Appointee" value={policy.nominee.appointeeName} />
-          </Block>
-
-          <Block title="Premium & term">
-            <Row label="Sum assured" value={`₹${formatNumber(policy.sumAssured)}`} />
-            <Row label="Premium" value={`₹${formatNumber(policy.premiumAmount)}`} />
-            <Row label="Frequency" value={policy.premiumFrequency} />
-            <Row label="Policy term" value={`${policy.policyTermYears} yrs`} />
-            <Row label="Premium paying term" value={`${policy.premiumPayingTermYears} yrs`} />
-            <Row label="Proposed start" value={formatDate(policy.proposedStartDate)} />
-          </Block>
-        </div>
+        <Block title="Policy details">
+          {policy.detailRows.length === 0 ? (
+            <p className="text-sm text-slate-400">No additional details.</p>
+          ) : (
+            policy.detailRows.map((r, i) => (
+              <Row key={i} label={r.label} value={r.value} />
+            ))
+          )}
+        </Block>
       </div>
 
       {(policy.documents.length > 0 || policy.partnerNotes || policy.adminNotes) && (

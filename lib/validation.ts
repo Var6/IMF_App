@@ -48,38 +48,16 @@ export const registrationSchema = z.object({
 
 export type RegistrationInput = z.infer<typeof registrationSchema>;
 
+/**
+ * Generic policy-submission shape. The service-specific answers live in
+ * `details` (validated against the per-category form in lib/forms.ts by the
+ * API route).
+ */
 export const policySchema = z.object({
   category: z.string().min(1),
   insurerSlug: z.string().min(1),
-  planName: z.string().trim().min(2, "Enter the plan name"),
-  planType: z.enum(["term", "endowment", "ulip", "whole-life", "money-back", "other"]),
-
-  proposerName: z.string().trim().min(2, "Enter proposer name"),
-  proposerDob: z.string().min(1, "Enter date of birth"),
-  proposerGender: z.enum(["male", "female", "other"]),
-  proposerMobile: z.string().trim().regex(mobileRegex, "Enter a valid mobile number"),
-  proposerEmail: z.string().trim().toLowerCase().email().optional().or(z.literal("")),
-  proposerPan: z.string().trim().toUpperCase().optional().or(z.literal("")),
-  proposerAadhaar: z.string().trim().optional().or(z.literal("")),
-  proposerAddress: z.string().optional().or(z.literal("")),
-  occupation: z.string().optional().or(z.literal("")),
-  annualIncome: z.coerce.number().nonnegative().optional(),
-  tobaccoUser: z.coerce.boolean().optional(),
-  medicalHistory: z.string().optional().or(z.literal("")),
-
-  nomineeName: z.string().trim().min(2, "Enter nominee name"),
-  nomineeRelation: z.string().trim().min(2, "Enter nominee relation"),
-  nomineeDob: z.string().optional().or(z.literal("")),
-  nomineeSharePercent: z.coerce.number().min(1).max(100).default(100),
-  appointeeName: z.string().optional().or(z.literal("")),
-
-  sumAssured: z.coerce.number().positive("Enter sum assured"),
-  premiumAmount: z.coerce.number().positive("Enter premium amount"),
-  premiumFrequency: z.enum(["monthly", "quarterly", "half-yearly", "yearly", "single"]),
-  policyTermYears: z.coerce.number().int().positive("Enter policy term"),
-  premiumPayingTermYears: z.coerce.number().int().positive("Enter premium paying term"),
-  proposedStartDate: z.string().optional().or(z.literal("")),
-
+  planName: z.string().trim().optional().or(z.literal("")),
+  details: z.record(z.string(), z.any()).default({}),
   documents: z
     .array(z.object({ label: z.string(), key: z.string() }))
     .optional()

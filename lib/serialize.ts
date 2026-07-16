@@ -1,35 +1,38 @@
 import type { PolicyDoc } from "@/models/Policy";
 import { publicUrlForKey } from "@/lib/r2";
+import { detailRows } from "@/lib/forms";
+import { categoryName } from "@/lib/catalog";
 
-/** A plain, client-safe view of a policy (with resolved document URLs). */
+/** A plain, client-safe view of a policy for lists/cards. */
 export interface PolicySummary {
   id: string;
   category: string;
+  categoryName: string;
   insurerName: string;
-  planName: string;
-  planType: string;
-  proposerName: string;
-  sumAssured: number;
-  premiumAmount: number;
-  premiumFrequency: string;
+  planName?: string;
+  applicantName: string;
+  applicantMobile: string;
   status: string;
   policyNumber?: string;
   rewardCoins: number;
   rewardCredited: boolean;
   createdAt: string;
+  keyFacts: { label: string; value: string }[];
+}
+
+function toRows(p: PolicyDoc) {
+  return detailRows(p.category, (p.details ?? {}) as Record<string, unknown>);
 }
 
 export function toPolicySummary(p: PolicyDoc): PolicySummary {
   return {
     id: String(p._id),
     category: p.category,
+    categoryName: categoryName(p.category),
     insurerName: p.insurerName,
-    planName: p.planName,
-    planType: p.planType,
-    proposerName: p.proposerName,
-    sumAssured: p.sumAssured,
-    premiumAmount: p.premiumAmount,
-    premiumFrequency: p.premiumFrequency,
+    planName: p.planName || undefined,
+    applicantName: p.applicantName,
+    applicantMobile: p.applicantMobile,
     status: p.status,
     policyNumber: p.policyNumber || undefined,
     rewardCoins: p.rewardCoins ?? 0,
@@ -38,32 +41,14 @@ export function toPolicySummary(p: PolicyDoc): PolicySummary {
       p.createdAt instanceof Date
         ? p.createdAt.toISOString()
         : String(p.createdAt ?? ""),
+    keyFacts: toRows(p).slice(0, 3),
   };
 }
 
 export interface PolicyFull extends PolicySummary {
   insurerSlug: string;
-  proposerDob: string;
-  proposerGender: string;
-  proposerMobile: string;
-  proposerEmail?: string;
-  proposerPan?: string;
-  proposerAadhaar?: string;
-  proposerAddress?: string;
-  occupation?: string;
-  annualIncome?: number;
-  tobaccoUser: boolean;
-  medicalHistory?: string;
-  nominee: {
-    name: string;
-    relation: string;
-    dob?: string;
-    sharePercent: number;
-    appointeeName?: string;
-  };
-  policyTermYears: number;
-  premiumPayingTermYears: number;
-  proposedStartDate?: string;
+  applicantEmail?: string;
+  detailRows: { label: string; value: string }[];
   partnerNotes?: string;
   adminNotes?: string;
   rejectionReason?: string;
@@ -74,27 +59,8 @@ export function toPolicyFull(p: PolicyDoc): PolicyFull {
   return {
     ...toPolicySummary(p),
     insurerSlug: p.insurerSlug,
-    proposerDob: p.proposerDob,
-    proposerGender: p.proposerGender,
-    proposerMobile: p.proposerMobile,
-    proposerEmail: p.proposerEmail || undefined,
-    proposerPan: p.proposerPan || undefined,
-    proposerAadhaar: p.proposerAadhaar || undefined,
-    proposerAddress: p.proposerAddress || undefined,
-    occupation: p.occupation || undefined,
-    annualIncome: p.annualIncome ?? undefined,
-    tobaccoUser: Boolean(p.tobaccoUser),
-    medicalHistory: p.medicalHistory || undefined,
-    nominee: {
-      name: p.nominee?.name ?? "",
-      relation: p.nominee?.relation ?? "",
-      dob: p.nominee?.dob || undefined,
-      sharePercent: p.nominee?.sharePercent ?? 100,
-      appointeeName: p.nominee?.appointeeName || undefined,
-    },
-    policyTermYears: p.policyTermYears,
-    premiumPayingTermYears: p.premiumPayingTermYears,
-    proposedStartDate: p.proposedStartDate || undefined,
+    applicantEmail: p.applicantEmail || undefined,
+    detailRows: toRows(p),
     partnerNotes: p.partnerNotes || undefined,
     adminNotes: p.adminNotes || undefined,
     rejectionReason: p.rejectionReason || undefined,

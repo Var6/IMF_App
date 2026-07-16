@@ -8,9 +8,11 @@
 
 export type CategorySlug =
   | "life"
+  | "keyman"
   | "health"
   | "car"
   | "two-wheeler"
+  | "commercial"
   | "travel"
   | "personal-accident"
   | "home"
@@ -54,6 +56,18 @@ export const CATEGORIES: ServiceCategory[] = [
     ],
   },
   {
+    slug: "keyman",
+    name: "Keyman Insurance",
+    tagline: "Protect your business against key-person loss",
+    icon: "🔑",
+    insurers: [
+      insurer("LIC of India"),
+      insurer("Max Life Insurance"),
+      insurer("Bajaj Allianz Life"),
+      insurer("Tata AIA Life"),
+    ],
+  },
+  {
     slug: "health",
     name: "Health Insurance",
     tagline: "Affordable cover for you and your family",
@@ -84,6 +98,18 @@ export const CATEGORIES: ServiceCategory[] = [
     name: "Two-Wheeler Insurance",
     tagline: "Ride worry-free with the right cover",
     icon: "🏍️",
+    insurers: [
+      insurer("ICICI Lombard"),
+      insurer("Bajaj Allianz General"),
+      insurer("Tata AIG"),
+      insurer("National Insurance"),
+    ],
+  },
+  {
+    slug: "commercial",
+    name: "Commercial Vehicle",
+    tagline: "Cover for trucks, buses and commercial fleets",
+    icon: "🚚",
     insurers: [
       insurer("ICICI Lombard"),
       insurer("Bajaj Allianz General"),

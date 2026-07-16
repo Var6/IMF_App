@@ -8,6 +8,7 @@ import { publicUrlForKey } from "@/lib/r2";
 import { Avatar } from "@/components/Avatar";
 import { StatusBadge } from "@/components/Logo";
 import { statusLabel, formatDate, formatDateTime, formatNumber } from "@/lib/format";
+import { categoryName } from "@/lib/catalog";
 import { PartnerActions } from "./PartnerActions";
 
 export default async function AdminPartnerDetail({
@@ -54,7 +55,7 @@ export default async function AdminPartnerDetail({
   const [policies, txns] = await Promise.all([
     Policy.find({ partner: id })
       .sort({ createdAt: -1 })
-      .select("planName insurerName status rewardCoins createdAt")
+      .select("planName category insurerName status rewardCoins createdAt")
       .lean(),
     CoinTransaction.find({ partner: id }).sort({ createdAt: -1 }).limit(20).lean(),
   ]);
@@ -164,7 +165,8 @@ export default async function AdminPartnerDetail({
                 {policies.map((pol) => {
                   const x = pol as never as {
                     _id: unknown;
-                    planName: string;
+                    planName?: string;
+                    category: string;
                     insurerName: string;
                     status: string;
                     rewardCoins?: number;
@@ -178,7 +180,7 @@ export default async function AdminPartnerDetail({
                     >
                       <div>
                         <p className="text-sm font-medium text-slate-800">
-                          {x.planName}
+                          {x.planName || categoryName(x.category)}
                         </p>
                         <p className="text-xs text-slate-400">
                           {x.insurerName} · {formatDate(x.createdAt)}

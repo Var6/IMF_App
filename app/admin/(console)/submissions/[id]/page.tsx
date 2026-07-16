@@ -8,10 +8,8 @@ import { PolicyDetails } from "@/components/PolicyDetails";
 import { Chat } from "@/components/Chat";
 import { SubmissionActions } from "./SubmissionActions";
 
-/** Suggest a default coin reward based on the premium. Admin can override. */
-function suggestReward(premium: number): number {
-  return Math.max(100, Math.min(2000, Math.round(premium / 50)));
-}
+/** Default suggested coin reward. Admin can override before creating. */
+const DEFAULT_REWARD = 300;
 
 export default async function AdminSubmissionDetail({
   params,
@@ -72,7 +70,7 @@ export default async function AdminSubmissionDetail({
             policyId={full.id}
             status={full.status}
             partnerName={partnerInfo?.name ?? "the partner"}
-            suggestedReward={suggestReward(full.premiumAmount)}
+            suggestedReward={DEFAULT_REWARD}
             initialNotes={full.adminNotes ?? ""}
           />
         </div>
