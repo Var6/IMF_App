@@ -59,6 +59,37 @@ function contact(
   return { title: "Customer contact details", icon: "👤", fields };
 }
 
+/** Nominee section — captured for every insurance type. */
+function nominee(): FormSection {
+  return {
+    title: "Nominee details",
+    icon: "👨‍👩‍👧",
+    fields: [
+      { name: "nomineeName", label: "Nominee Name", type: "text", required: true, placeholder: "Nominee full name" },
+      {
+        name: "nomineeRelation",
+        label: "Relationship with Nominee",
+        type: "select",
+        required: true,
+        options: opt([
+          ["spouse", "Spouse"],
+          ["wife", "Wife"],
+          ["husband", "Husband"],
+          ["son", "Son"],
+          ["daughter", "Daughter"],
+          ["father", "Father"],
+          ["mother", "Mother"],
+          ["brother", "Brother"],
+          ["sister", "Sister"],
+          ["other", "Other"],
+        ]),
+      },
+      { name: "nomineeDob", label: "Nominee Date of Birth", type: "date" },
+      { name: "nomineeShare", label: "Nominee Share (%)", type: "number", placeholder: "e.g. 100" },
+    ],
+  };
+}
+
 const AGE_BANDS = opt([
   ["18-25", "18-25 Years"],
   ["26-35", "26-35 Years"],
@@ -87,8 +118,6 @@ export const SERVICE_FORMS: Record<string, ServiceForm> = {
           { name: "annualIncome", label: "Annual Income", type: "select", options: opt([["<3", "Under ₹3 Lakhs"], ["3-5", "₹3-5 Lakhs"], ["5-10", "₹5-10 Lakhs"], ["10-25", "₹10-25 Lakhs"], ["25+", "₹25+ Lakhs"]]) },
           { name: "coverage", label: "Coverage Needed (Sum Assured)", type: "select", required: true, options: opt([["10", "₹10 Lakhs"], ["25", "₹25 Lakhs"], ["50", "₹50 Lakhs"], ["100", "₹1 Crore"], ["200", "₹2 Crores"]]) },
           { name: "tobacco", label: "Tobacco / Smoker?", type: "select", options: opt([["no", "No"], ["yes", "Yes"]]) },
-          { name: "nomineeName", label: "Nominee Name", type: "text", placeholder: "Nominee full name" },
-          { name: "nomineeRelation", label: "Nominee Relationship", type: "text", placeholder: "Spouse / Son / Mother…" },
         ],
       },
       contact("Full Name"),
@@ -261,6 +290,12 @@ export const SERVICE_FORMS: Record<string, ServiceForm> = {
     ],
   },
 };
+
+// Nominee details are captured for every insurance type — inject the nominee
+// section just before the contact section of each form.
+for (const form of Object.values(SERVICE_FORMS)) {
+  form.sections.splice(Math.max(0, form.sections.length - 1), 0, nominee());
+}
 
 export function getServiceForm(category: string): ServiceForm | undefined {
   return SERVICE_FORMS[category];
