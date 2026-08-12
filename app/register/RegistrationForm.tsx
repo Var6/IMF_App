@@ -97,7 +97,8 @@ export function RegistrationForm() {
       });
       const data = await res.json();
       if (!res.ok) {
-        if (data.issues?.fieldErrors) setFieldErrors(data.issues.fieldErrors);
+        if (data.fieldErrors) setFieldErrors(data.fieldErrors);
+        else if (data.issues?.fieldErrors) setFieldErrors(data.issues.fieldErrors);
         setError(data.error || "Registration failed. Please check your details.");
         window.scrollTo({ top: 0, behavior: "smooth" });
         return;

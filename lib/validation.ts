@@ -10,15 +10,28 @@ export const mobileRegex = /^[6-9]\d{9}$/;
 export const registrationSchema = z.object({
   name: z.string().trim().min(2, "Enter your full name"),
   email: z.string().trim().toLowerCase().email("Enter a valid email"),
-  mobile: z.string().trim().regex(mobileRegex, "Enter a valid 10-digit mobile number"),
+  mobile: z
+    .string()
+    .trim()
+    .transform((s) => {
+      let d = s.replace(/\D/g, "");
+      if (d.length === 12 && d.startsWith("91")) d = d.slice(2);
+      if (d.length === 11 && d.startsWith("0")) d = d.slice(1);
+      return d;
+    })
+    .refine((s) => mobileRegex.test(s), "Enter a valid 10-digit mobile number"),
   password: z.string().min(8, "Password must be at least 8 characters"),
 
-  aadhaarNumber: z.string().trim().regex(aadhaarRegex, "Aadhaar must be 12 digits"),
+  aadhaarNumber: z
+    .string()
+    .trim()
+    .transform((s) => s.replace(/[\s-]/g, ""))
+    .refine((s) => aadhaarRegex.test(s), "Aadhaar must be 12 digits"),
   panNumber: z
     .string()
     .trim()
-    .toUpperCase()
-    .regex(panRegex, "Enter a valid PAN (e.g. ABCDE1234F)"),
+    .transform((s) => s.toUpperCase().replace(/\s/g, ""))
+    .refine((s) => panRegex.test(s), "Enter a valid PAN (e.g. ABCDE1234F)"),
   selfieKey: z.string().min(1, "Selfie is required"),
 
   aadhaarImageKey: z.string().optional().or(z.literal("")),
@@ -36,8 +49,13 @@ export const registrationSchema = z.object({
     accountNumber: z
       .string()
       .trim()
-      .regex(/^\d{6,20}$/, "Enter a valid account number"),
-    ifsc: z.string().trim().toUpperCase().regex(ifscRegex, "Enter a valid IFSC code"),
+      .transform((s) => s.replace(/\s/g, ""))
+      .refine((s) => /^\d{6,20}$/.test(s), "Enter a valid account number"),
+    ifsc: z
+      .string()
+      .trim()
+      .transform((s) => s.toUpperCase().replace(/\s/g, ""))
+      .refine((s) => ifscRegex.test(s), "Enter a valid IFSC code"),
     bankName: z.string().trim().min(2, "Enter bank name"),
     branch: z.string().optional().or(z.literal("")),
   }),

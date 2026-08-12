@@ -12,8 +12,19 @@ export async function POST(req: Request) {
   const parsed = registrationSchema.safeParse(body);
 
   if (!parsed.success) {
+    // Build dot-path field errors (so nested bank.* fields surface) plus a
+    // short readable summary listing exactly what to fix.
+    const fieldErrors: Record<string, string[]> = {};
+    for (const issue of parsed.error.issues) {
+      const key = issue.path.join(".") || "_";
+      (fieldErrors[key] ??= []).push(issue.message);
+    }
+    const summary = Object.values(fieldErrors)
+      .map((m) => m[0])
+      .slice(0, 5)
+      .join("; ");
     return NextResponse.json(
-      { error: "Validation failed", issues: parsed.error.flatten() },
+      { error: summary || "Please check your details.", fieldErrors },
       { status: 400 }
     );
   }
