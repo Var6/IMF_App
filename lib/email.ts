@@ -123,6 +123,8 @@ export function notifyPartnerRejected(partner: PartnerLike, reason?: string) {
       `Your partner registration could not be approved at this time.\n\n` +
       `Reason: ${reason || "Not approved."}\n\n` +
       `Please review the details and contact us if you'd like to reapply.`,
+    actionLabel: "Visit Citizen IMF",
+    actionUrl: appBaseUrl(),
   });
 }
 
