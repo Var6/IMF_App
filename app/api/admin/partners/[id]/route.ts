@@ -2,6 +2,11 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { Partner } from "@/models/Partner";
 import { requireRole, hashPassword } from "@/lib/auth";
+import {
+  notifyPartnerApproved,
+  notifyPartnerRejected,
+  notifyPartnerPasswordReset,
+} from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -55,5 +60,15 @@ export async function PATCH(
   }
 
   await partner.save();
+
+  // Email the partner about the action (no-op if EmailJS is not configured).
+  if (body.action === "verify") {
+    await notifyPartnerApproved(partner);
+  } else if (body.action === "reject") {
+    await notifyPartnerRejected(partner, partner.rejectionReason ?? undefined);
+  } else if (body.action === "reset-password") {
+    await notifyPartnerPasswordReset(partner, body.newPassword!.trim());
+  }
+
   return NextResponse.json({ ok: true, status: partner.status });
 }

@@ -4,6 +4,8 @@ import { Policy } from "@/models/Policy";
 import { Partner } from "@/models/Partner";
 import { CoinTransaction } from "@/models/CoinTransaction";
 import { requireRole } from "@/lib/auth";
+import { categoryName } from "@/lib/catalog";
+import { notifyPolicyCreated, notifyPolicyRejected } from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -108,6 +110,16 @@ export async function PATCH(
         byAdminName: session.name,
       });
 
+      // Notify the partner their policy was created (no-op if email not set up).
+      await notifyPolicyCreated(partner, {
+        _id: policy._id,
+        insurerName: policy.insurerName ?? undefined,
+        planName: policy.planName ?? undefined,
+        categoryName: categoryName(policy.category),
+        policyNumber,
+        rewardCoins: reward,
+      });
+
       return NextResponse.json({
         ok: true,
         status: policy.status,
@@ -121,5 +133,18 @@ export async function PATCH(
   }
 
   await policy.save();
+
+  // On rejection, email the partner with the reason + resubmit link.
+  if (body.action === "reject") {
+    const partner = await Partner.findById(policy.partner);
+    if (partner) {
+      await notifyPolicyRejected(partner, {
+        _id: policy._id,
+        insurerName: policy.insurerName ?? undefined,
+        planName: policy.planName ?? undefined,
+      }, policy.rejectionReason ?? undefined);
+    }
+  }
+
   return NextResponse.json({ ok: true, status: policy.status });
 }
