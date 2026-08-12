@@ -9,18 +9,34 @@ export function DynamicPolicyForm({
   category,
   insurerSlug,
   insurerName,
+  policyId,
+  initialDetails,
+  initialPlanName,
+  initialNotes,
+  initialDocs,
 }: {
   category: string;
   insurerSlug: string;
   insurerName: string;
+  /** When set, the form edits an existing (rejected) policy and resubmits it. */
+  policyId?: string;
+  initialDetails?: Record<string, string>;
+  initialPlanName?: string;
+  initialNotes?: string;
+  initialDocs?: { label: string; key: string }[];
 }) {
   const router = useRouter();
   const form = getServiceForm(category);
+  const isEdit = Boolean(policyId);
 
-  const [details, setDetails] = useState<Record<string, string>>({});
-  const [planName, setPlanName] = useState("");
-  const [notes, setNotes] = useState("");
-  const [docs, setDocs] = useState<{ label: string; key: string }[]>([]);
+  const [details, setDetails] = useState<Record<string, string>>(
+    initialDetails ?? {}
+  );
+  const [planName, setPlanName] = useState(initialPlanName ?? "");
+  const [notes, setNotes] = useState(initialNotes ?? "");
+  const [docs, setDocs] = useState<{ label: string; key: string }[]>(
+    initialDocs ?? []
+  );
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -51,18 +67,21 @@ export function DynamicPolicyForm({
     setFieldErrors({});
     setSubmitting(true);
     try {
-      const res = await fetch("/api/policies", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          category,
-          insurerSlug,
-          planName,
-          details,
-          documents: docs,
-          partnerNotes: notes,
-        }),
-      });
+      const res = await fetch(
+        isEdit ? `/api/policies/${policyId}` : "/api/policies",
+        {
+          method: isEdit ? "PATCH" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            category,
+            insurerSlug,
+            planName,
+            details,
+            documents: docs,
+            partnerNotes: notes,
+          }),
+        }
+      );
       const data = await res.json();
       if (!res.ok) {
         if (data.fieldErrors) setFieldErrors(data.fieldErrors);
@@ -70,7 +89,8 @@ export function DynamicPolicyForm({
         window.scrollTo({ top: 0, behavior: "smooth" });
         return;
       }
-      router.push(`/dashboard/requests/${data.id}`);
+      router.push(`/dashboard/requests/${isEdit ? policyId : data.id}`);
+      router.refresh();
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {
@@ -148,7 +168,11 @@ export function DynamicPolicyForm({
 
       <div className="flex justify-end">
         <button type="submit" disabled={submitting} className="btn-primary px-8">
-          {submitting ? "Submitting…" : "Submit policy request"}
+          {submitting
+            ? "Submitting…"
+            : isEdit
+            ? "Resubmit for approval"
+            : "Submit policy request"}
         </button>
       </div>
     </form>
@@ -167,15 +191,22 @@ function Field({
   error?: string;
 }) {
   if (field.type === "file") {
+    const alreadyAttached = Boolean(value);
     return (
       <div className={field.full ? "md:col-span-2" : ""}>
         <FileUpload
           label={field.label}
-          required={field.required}
+          required={field.required && !alreadyAttached}
           folder="policies/docs"
           accept="image/*,application/pdf"
-          hint={field.required ? "Required. Image or PDF, max 8MB." : "Optional. Image or PDF."}
-          onUploaded={(k) => onChange(k || "")}
+          hint={
+            alreadyAttached
+              ? "✓ A document is already attached — upload a new file only to replace it."
+              : field.required
+              ? "Required. Image or PDF, max 8MB."
+              : "Optional. Image or PDF."
+          }
+          onUploaded={(k) => onChange(k || value)}
         />
         {error && <p className="field-error">{error}</p>}
       </div>

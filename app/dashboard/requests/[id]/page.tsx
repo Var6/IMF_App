@@ -52,6 +52,30 @@ export default async function PartnerPolicyDetail({
         </div>
       )}
 
+      {full.status === "rejected" && (
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-red-200 bg-red-50 px-5 py-4">
+          <div className="flex items-start gap-3">
+            <span className="text-2xl">⚠️</span>
+            <div>
+              <p className="font-semibold text-red-800">
+                This request was rejected
+              </p>
+              <p className="text-sm text-red-700">
+                {full.rejectionReason
+                  ? full.rejectionReason
+                  : "Please review and resubmit."}
+              </p>
+            </div>
+          </div>
+          <Link
+            href={`/dashboard/requests/${full.id}/edit`}
+            className="btn-primary whitespace-nowrap"
+          >
+            Edit &amp; resubmit
+          </Link>
+        </div>
+      )}
+
       <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_400px]">
         <PolicyDetails policy={full} />
         <div className="lg:sticky lg:top-24 lg:self-start">
