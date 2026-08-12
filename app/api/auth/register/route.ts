@@ -3,7 +3,10 @@ import { connectDB } from "@/lib/db";
 import { Partner } from "@/models/Partner";
 import { hashPassword } from "@/lib/auth";
 import { registrationSchema } from "@/lib/validation";
-import { notifyAdminNewRegistration } from "@/lib/email";
+import {
+  notifyAdminNewRegistration,
+  notifyPartnerRegistered,
+} from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -71,12 +74,15 @@ export async function POST(req: Request) {
     coins: 0,
   });
 
-  // Alert the admin to review the new registration (no-op if email not set up).
-  await notifyAdminNewRegistration({
-    name: data.name,
-    email: data.email,
-    mobile: data.mobile,
-  });
+  // Thank the partner + alert the admin (no-op if email is not configured).
+  await Promise.allSettled([
+    notifyPartnerRegistered({ name: data.name, email: data.email }),
+    notifyAdminNewRegistration({
+      name: data.name,
+      email: data.email,
+      mobile: data.mobile,
+    }),
+  ]);
 
   return NextResponse.json({ ok: true });
 }

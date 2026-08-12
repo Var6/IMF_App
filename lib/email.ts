@@ -144,6 +144,24 @@ export function notifyPartnerPasswordReset(
   });
 }
 
+/** Thank a new partner for registering and tell them it's under review. */
+export function notifyPartnerRegistered(partner: PartnerLike) {
+  return sendNotification({
+    toEmail: partner.email ?? "",
+    toName: partner.name,
+    subject: "Thank you for registering with Citizen IMF 🙏",
+    title: "Registration received",
+    message:
+      `Thank you for registering as a Citizen IMF partner.\n\n` +
+      `Your application has been received and is now under review by our team. ` +
+      `You'll get an email as soon as your account is verified — after that you ` +
+      `can log in with your email and password and start creating policies.\n\n` +
+      `We're glad to have you on board!`,
+    actionLabel: "Go to login",
+    actionUrl: `${appBaseUrl()}/login`,
+  });
+}
+
 /** Alert the admin that a new partner has registered and needs review. */
 export function notifyAdminNewRegistration(partner: {
   name?: string;
