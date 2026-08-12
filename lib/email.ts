@@ -144,6 +144,31 @@ export function notifyPartnerPasswordReset(
   });
 }
 
+/** Alert the admin that a new partner has registered and needs review. */
+export function notifyAdminNewRegistration(partner: {
+  name?: string;
+  email?: string;
+  mobile?: string;
+}) {
+  const adminEmail =
+    process.env.ADMIN_NOTIFY_EMAIL || process.env.SEED_ADMIN_EMAIL || "";
+  if (!adminEmail) return Promise.resolve(false);
+  return sendNotification({
+    toEmail: adminEmail,
+    toName: "Admin",
+    subject: "New partner registration — review needed",
+    title: "New partner registered",
+    message:
+      `A new partner has registered and is awaiting verification.\n\n` +
+      `Name: ${partner.name ?? "-"}\n` +
+      `Email: ${partner.email ?? "-"}\n` +
+      `Mobile: ${partner.mobile ?? "-"}\n\n` +
+      `Please review and approve or reject the application.`,
+    actionLabel: "Review partners",
+    actionUrl: `${appBaseUrl()}/admin/partners`,
+  });
+}
+
 export function notifyPolicyCreated(partner: PartnerLike, policy: PolicyLike) {
   const rewardLine = policy.rewardCoins
     ? `\n\nYou earned ${policy.rewardCoins} reward coins for this policy. 🪙`

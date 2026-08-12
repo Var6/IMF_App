@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db";
 import { Partner } from "@/models/Partner";
 import { hashPassword } from "@/lib/auth";
 import { registrationSchema } from "@/lib/validation";
+import { notifyAdminNewRegistration } from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -57,6 +58,13 @@ export async function POST(req: Request) {
     marksheet12Key: data.marksheet12Key || undefined,
     status: "pending",
     coins: 0,
+  });
+
+  // Alert the admin to review the new registration (no-op if email not set up).
+  await notifyAdminNewRegistration({
+    name: data.name,
+    email: data.email,
+    mobile: data.mobile,
   });
 
   return NextResponse.json({ ok: true });
