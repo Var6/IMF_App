@@ -11,6 +11,8 @@ type Keys = {
   panImageKey: string | null;
   marksheet10Key: string | null;
   marksheet12Key: string | null;
+  graduationKey: string | null;
+  postGraduationKey: string | null;
 };
 
 const initialForm = {
@@ -42,6 +44,8 @@ export function RegistrationForm() {
     panImageKey: null,
     marksheet10Key: null,
     marksheet12Key: null,
+    graduationKey: null,
+    postGraduationKey: null,
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -87,6 +91,8 @@ export function RegistrationForm() {
       },
       marksheet10Key: keys.marksheet10Key || "",
       marksheet12Key: keys.marksheet12Key || "",
+      graduationKey: keys.graduationKey || "",
+      postGraduationKey: keys.postGraduationKey || "",
     };
 
     try {
@@ -236,6 +242,20 @@ export function RegistrationForm() {
             folder="registration/marksheets"
             accept="image/*,application/pdf"
             onUploaded={(k) => setKeys((s) => ({ ...s, marksheet12Key: k }))}
+          />
+          <FileUpload
+            label="Graduation marksheet"
+            folder="registration/marksheets"
+            accept="image/*,application/pdf"
+            hint="Degree certificate or final marksheet, if you have one."
+            onUploaded={(k) => setKeys((s) => ({ ...s, graduationKey: k }))}
+          />
+          <FileUpload
+            label="Post-graduation marksheet"
+            folder="registration/marksheets"
+            accept="image/*,application/pdf"
+            hint="Degree certificate or final marksheet, if you have one."
+            onUploaded={(k) => setKeys((s) => ({ ...s, postGraduationKey: k }))}
           />
         </div>
       </Section>

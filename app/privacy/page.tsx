@@ -19,7 +19,7 @@ export default function PrivacyPage() {
         <ul className="list-disc space-y-1 pl-6">
           <li>Identity details — full name, date of birth, gender, mobile number and email address.</li>
           <li>KYC information — Aadhaar number, PAN number, and a selfie photograph.</li>
-          <li>Optional identity/education documents — Aadhaar card, PAN card, and 10th/12th marksheets.</li>
+          <li>Optional identity/education documents — Aadhaar card, PAN card, and 10th/12th/graduation/post-graduation marksheets.</li>
           <li>Bank account details — account holder name, account number, IFSC and bank name — used for reward settlement records.</li>
           <li>Policy submission data — proposer, nominee and plan details you enter on behalf of customers.</li>
         </ul>

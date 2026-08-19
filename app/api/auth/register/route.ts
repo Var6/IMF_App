@@ -70,6 +70,8 @@ export async function POST(req: Request) {
     },
     marksheet10Key: data.marksheet10Key || undefined,
     marksheet12Key: data.marksheet12Key || undefined,
+    graduationKey: data.graduationKey || undefined,
+    postGraduationKey: data.postGraduationKey || undefined,
     status: "pending",
     coins: 0,
   });

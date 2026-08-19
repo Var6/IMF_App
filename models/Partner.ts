@@ -54,6 +54,8 @@ const partnerSchema = new Schema(
     // Optional education documents
     marksheet10Key: { type: String },
     marksheet12Key: { type: String },
+    graduationKey: { type: String },
+    postGraduationKey: { type: String },
 
     // Account lifecycle
     status: {

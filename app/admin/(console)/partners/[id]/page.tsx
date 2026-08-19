@@ -41,6 +41,8 @@ export default async function AdminPartnerDetail({
     panImageKey?: string;
     marksheet10Key?: string;
     marksheet12Key?: string;
+    graduationKey?: string;
+    postGraduationKey?: string;
     rejectionReason?: string;
     createdAt: Date;
     bank?: {
@@ -66,6 +68,11 @@ export default async function AdminPartnerDetail({
     { label: "PAN card", url: publicUrlForKey(p.panImageKey) },
     { label: "10th marksheet", url: publicUrlForKey(p.marksheet10Key) },
     { label: "12th marksheet", url: publicUrlForKey(p.marksheet12Key) },
+    { label: "Graduation marksheet", url: publicUrlForKey(p.graduationKey) },
+    {
+      label: "Post-graduation marksheet",
+      url: publicUrlForKey(p.postGraduationKey),
+    },
   ].filter((d) => d.url);
 
   return (

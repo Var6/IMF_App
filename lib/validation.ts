@@ -62,6 +62,8 @@ export const registrationSchema = z.object({
 
   marksheet10Key: z.string().optional().or(z.literal("")),
   marksheet12Key: z.string().optional().or(z.literal("")),
+  graduationKey: z.string().optional().or(z.literal("")),
+  postGraduationKey: z.string().optional().or(z.literal("")),
 });
 
 export type RegistrationInput = z.infer<typeof registrationSchema>;
