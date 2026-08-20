@@ -2,6 +2,12 @@ import { redirect } from "next/navigation";
 import { getCurrentAdmin } from "@/lib/current";
 import { AdminNav } from "@/components/AdminNav";
 
+/**
+ * Every console page reads live per-request data behind an admin session,
+ * so nothing under here may be prerendered or cached.
+ */
+export const dynamic = "force-dynamic";
+
 export default async function AdminConsoleLayout({
   children,
 }: {

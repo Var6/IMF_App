@@ -3,6 +3,12 @@ import { getCurrentPartner } from "@/lib/current";
 import { publicUrlForKey } from "@/lib/r2";
 import { PartnerNav } from "@/components/PartnerNav";
 
+/**
+ * Every dashboard page reads live per-request data behind a partner session,
+ * so nothing under here may be prerendered or cached.
+ */
+export const dynamic = "force-dynamic";
+
 export default async function DashboardLayout({
   children,
 }: {
